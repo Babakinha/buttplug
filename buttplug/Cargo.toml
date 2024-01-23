@@ -27,7 +27,7 @@ features = ["default", "unstable"]
 
 [features]
 # Basic features
-default=["tokio-runtime", "jsonschema/resolve-file", "client", "server", "serialize-json", "websockets", "btleplug-manager", "xinput-manager", "serial-manager", "hid-manager", "lovense-dongle-manager", "lovense-connect-service-manager", "websocket-server-manager"]
+default=["tokio-runtime", "jsonschema/resolve-file", "client", "server", "serialize-json", "websockets", "btleplug-manager", "evdev-manager", "xinput-manager", "serial-manager", "hid-manager", "lovense-dongle-manager", "lovense-connect-service-manager", "websocket-server-manager"]
 client=[]
 server=[]
 serialize-json=[]
@@ -35,6 +35,7 @@ serialize-json=[]
 websockets=["serialize-json", "async-tungstenite", "tokio-native-tls"]
 # Device Communication Managers
 xinput-manager=["server"]
+evdev-manager=["server", "evdev"]
 btleplug-manager=["server", "btleplug"]
 serial-manager=["server", "serialport"]
 hid-manager=["server", "hidapi"]
@@ -113,6 +114,7 @@ serialport = { version = "4.2.2", optional = true }
 hidapi = { version = "2.4.1", default-features = false, features = ["linux-static-hidraw", "illumos-static-libusb"], optional = true }
 
 [target.'cfg(target_os = "linux")'.dependencies]
+evdev = { version = "0.12.1", optional = true }
 serialport = { version = "4.2.2", optional = true }
 # Linux hidraw is needed here in order to work with the lovense dongle. libusb breaks it on linux.
 # Other platforms are not affected by the feature changes.

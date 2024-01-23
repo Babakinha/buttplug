@@ -19,6 +19,7 @@ pub mod ankni;
 pub mod buttplug_passthru;
 pub mod cachito;
 pub mod cowgirl;
+pub mod evdev;
 pub mod foreo;
 pub mod fox;
 pub mod fredorch;
@@ -440,6 +441,7 @@ pub fn get_default_protocol_map() -> HashMap<String, Arc<dyn ProtocolIdentifierF
     wevibe_chorus::setup::WeVibeChorusIdentifierFactory::default(),
   );
   add_to_protocol_map(&mut map, xibao::setup::XibaoIdentifierFactory::default());
+  add_to_protocol_map(&mut map, evdev::setup::EvdevIdentifierFactory::default());
   add_to_protocol_map(&mut map, xinput::setup::XInputIdentifierFactory::default());
   add_to_protocol_map(
     &mut map,

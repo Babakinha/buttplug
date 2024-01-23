@@ -256,6 +256,25 @@ impl PartialEq for XInputSpecifier {
   }
 }
 
+/// Specifier for [evdev](crate::server::device::communication_manager::evdev) devices
+#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
+pub struct EvdevSpecifier {
+  // Needed for deserialziation but unused.
+  #[allow(dead_code)]
+  exists: bool,
+}
+
+impl Default for EvdevSpecifier {
+  fn default() -> Self {
+    Self { exists: true }
+  }
+}
+
+impl PartialEq for EvdevSpecifier {
+  fn eq(&self, _other: &Self) -> bool {
+    true
+  }
+}
 /// Specifier for HID (USB, Bluetooth) devices
 ///
 /// Handles devices managed by the operating system's HID manager.
@@ -367,6 +386,7 @@ impl WebsocketSpecifier {
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum ProtocolCommunicationSpecifier {
   BluetoothLE(BluetoothLESpecifier),
+  Evdev(EvdevSpecifier),
   HID(HIDSpecifier),
   USB(USBSpecifier),
   Serial(SerialSpecifier),
@@ -382,6 +402,7 @@ impl PartialEq for ProtocolCommunicationSpecifier {
       (USB(self_spec), USB(other_spec)) => self_spec == other_spec,
       (Serial(self_spec), Serial(other_spec)) => self_spec == other_spec,
       (BluetoothLE(self_spec), BluetoothLE(other_spec)) => self_spec == other_spec,
+      (Evdev(self_spec), Evdev(other_spec)) => self_spec == other_spec,
       (HID(self_spec), HID(other_spec)) => self_spec == other_spec,
       (XInput(self_spec), XInput(other_spec)) => self_spec == other_spec,
       (Websocket(self_spec), Websocket(other_spec)) => self_spec == other_spec,

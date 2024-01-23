@@ -23,7 +23,7 @@ use crate::{
       ServerDeviceMessageAttributes,
       USBSpecifier,
       WebsocketSpecifier,
-      XInputSpecifier,
+      XInputSpecifier, EvdevSpecifier,
     },
     ServerDeviceIdentifier,
   },
@@ -120,6 +120,8 @@ pub struct ProtocolDefinition {
   serial: Option<Vec<SerialSpecifier>>,
   #[serde(skip_serializing_if = "Option::is_none")]
   hid: Option<Vec<HIDSpecifier>>,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  evdev: Option<EvdevSpecifier>,
   #[serde(skip_serializing_if = "Option::is_none")]
   xinput: Option<XInputSpecifier>,
   #[serde(skip_serializing_if = "Option::is_none")]
@@ -225,6 +227,9 @@ impl From<ProtocolDefinition> for ProtocolDeviceConfiguration {
     }
     if let Some(btle) = &protocol_def.btle {
       specifiers.push(ProtocolCommunicationSpecifier::BluetoothLE(btle.clone()));
+    }
+    if let Some(evdev) = &protocol_def.evdev{
+      specifiers.push(ProtocolCommunicationSpecifier::Evdev(*evdev));
     }
     if let Some(xinput) = &protocol_def.xinput {
       specifiers.push(ProtocolCommunicationSpecifier::XInput(*xinput));

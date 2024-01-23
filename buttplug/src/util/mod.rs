@@ -87,6 +87,11 @@ pub async fn in_process_client(client_name: &str, allow_raw_messages: bool) -> B
       WebsocketServerDeviceCommunicationManagerBuilder::default().listen_on_all_interfaces(true),
     );
   }
+  #[cfg(all(feature = "evdev-manager", target_os = "linux"))]
+  {
+    use crate::server::device::hardware::communication::evdev::EvdevCommunicationManagerBuilder;
+    server_builder.comm_manager(EvdevCommunicationManagerBuilder::default());
+  }
   #[cfg(all(
     feature = "serial-manager",
     any(target_os = "windows", target_os = "macos", target_os = "linux")

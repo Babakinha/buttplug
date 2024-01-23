@@ -412,6 +412,9 @@
             "hid": {
               "$ref": "#/components/usb-definition"
             },
+            "evdev": {
+              "$ref": "#/components/xinput-definition"
+            },
             "xinput": {
               "$ref": "#/components/xinput-definition"
             },

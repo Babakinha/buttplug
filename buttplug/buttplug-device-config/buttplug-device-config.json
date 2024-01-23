@@ -1051,6 +1051,32 @@
         }
       ]
     },
+    "evdev": {
+      "evdev": {
+        "exists": true
+      },
+      "defaults": {
+        "name": "Microsoft X-Box One pad",
+        "messages": {
+          "ScalarCmd": [
+            {
+              "StepRange": [
+                0,
+                65535
+              ],
+              "ActuatorType": "Vibrate"
+            },
+            {
+              "StepRange": [
+                0,
+                65535
+              ],
+              "ActuatorType": "Vibrate"
+            }
+          ]
+        }
+      }
+    },
     "xinput": {
       "xinput": {
         "exists": true

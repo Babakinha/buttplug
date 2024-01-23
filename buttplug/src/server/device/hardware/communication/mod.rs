@@ -46,6 +46,10 @@ pub mod hid;
 #[cfg(all(feature = "xinput-manager", target_os = "windows"))]
 pub mod xinput;
 
+// Evdev is for linux only >:3
+#[cfg(all(feature = "evdev-manager", target_os = "linux"))]
+pub mod evdev;
+
 use crate::{
   core::{errors::ButtplugDeviceError, ButtplugResultFuture},
   server::device::hardware::HardwareConnector,
