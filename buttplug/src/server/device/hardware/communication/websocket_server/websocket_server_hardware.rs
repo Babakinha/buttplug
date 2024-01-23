@@ -29,8 +29,6 @@ use crate::{
 use async_trait::async_trait;
 use futures::{
   future::{self, BoxFuture},
-  AsyncRead,
-  AsyncWrite,
   FutureExt,
   SinkExt,
   StreamExt,
@@ -44,6 +42,7 @@ use std::{
   time::Duration,
 };
 use tokio::{
+  net::TcpStream,
   sync::{
     broadcast,
     mpsc::{channel, Receiver, Sender},
@@ -53,15 +52,13 @@ use tokio::{
 };
 use tokio_util::sync::CancellationToken;
 
-async fn run_connection_loop<S>(
+async fn run_connection_loop(
   address: &str,
   event_sender: broadcast::Sender<HardwareEvent>,
-  ws_stream: async_tungstenite::WebSocketStream<S>,
+  ws_stream: tokio_tungstenite::WebSocketStream<TcpStream>,
   mut request_receiver: Receiver<Vec<u8>>,
   response_sender: broadcast::Sender<Vec<u8>>,
-) where
-  S: AsyncRead + AsyncWrite + Unpin,
-{
+) {
   info!("Starting websocket server connection event loop.");
 
   let (mut websocket_server_sender, mut websocket_server_receiver) = ws_stream.split();
@@ -78,7 +75,7 @@ async fn run_connection_loop<S>(
         }
         pong_count = 0;
         if websocket_server_sender
-          .send(async_tungstenite::tungstenite::Message::Ping(vec!(0)))
+          .send(tokio_tungstenite::tungstenite::Message::Ping(vec!(0)))
           .await
           .is_err() {
           error!("Cannot send ping to client, considering connection closed.");
@@ -88,7 +85,7 @@ async fn run_connection_loop<S>(
       ws_msg = request_receiver.recv().fuse() => {
         if let Some(binary_msg) = ws_msg {
           if websocket_server_sender
-            .send(async_tungstenite::tungstenite::Message::Binary(binary_msg))
+            .send(tokio_tungstenite::tungstenite::Message::Binary(binary_msg))
             .await
             .is_err() {
             error!("Cannot send binary value to client, considering connection closed.");
@@ -104,15 +101,15 @@ async fn run_connection_loop<S>(
           match ws_data {
             Ok(msg) => {
               match msg {
-                async_tungstenite::tungstenite::Message::Text(text_msg) => {
+                tokio_tungstenite::tungstenite::Message::Text(text_msg) => {
                   // If someone accidentally packs text, politely turn it into binary for them.
                   let _ = response_sender.send(text_msg.as_bytes().to_vec());
                 }
-                async_tungstenite::tungstenite::Message::Binary(binary_msg) => {
+                tokio_tungstenite::tungstenite::Message::Binary(binary_msg) => {
                   // If no one is listening, ignore output.
                   let _ = response_sender.send(binary_msg);
                 }
-                async_tungstenite::tungstenite::Message::Close(_) => {
+                tokio_tungstenite::tungstenite::Message::Close(_) => {
                   // Drop the error if no one receives the message, we're breaking anyways.
                   let _ = event_sender
                     .send(HardwareEvent::Disconnected(
@@ -120,15 +117,15 @@ async fn run_connection_loop<S>(
                     ));
                   break;
                 }
-                async_tungstenite::tungstenite::Message::Ping(_) => {
+                tokio_tungstenite::tungstenite::Message::Ping(_) => {
                   // noop
                   continue;
                 }
-                async_tungstenite::tungstenite::Message::Frame(_) => {
+                tokio_tungstenite::tungstenite::Message::Frame(_) => {
                   // noop
                   continue;
                 }
-                async_tungstenite::tungstenite::Message::Pong(_) => {
+                tokio_tungstenite::tungstenite::Message::Pong(_) => {
                   pong_count += 1;
                   continue;
                 }
@@ -170,13 +167,10 @@ pub struct WebsocketServerHardwareConnector {
 }
 
 impl WebsocketServerHardwareConnector {
-  pub fn new<S>(
+  pub fn new(
     info: WebsocketServerDeviceCommManagerInitInfo,
-    ws_stream: async_tungstenite::WebSocketStream<S>,
-  ) -> Self
-  where
-    S: 'static + AsyncRead + AsyncWrite + Unpin + Send,
-  {
+    ws_stream: tokio_tungstenite::WebSocketStream<TcpStream>,
+  ) -> Self {
     let (outgoing_sender, outgoing_receiver) = channel(256);
     let (incoming_broadcaster, _) = broadcast::channel(256);
     let incoming_broadcaster_clone = incoming_broadcaster.clone();

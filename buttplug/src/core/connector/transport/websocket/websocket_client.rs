@@ -22,18 +22,92 @@ use crate::{
   },
   util::async_manager,
 };
-use async_tungstenite::{tokio::connect_async_with_tls_connector, tungstenite::protocol::Message};
 use futures::{future::BoxFuture, FutureExt, SinkExt, StreamExt};
+use rustls::{
+  client::danger::{HandshakeSignatureValid, ServerCertVerified, ServerCertVerifier},
+  ClientConfig,
+  SignatureScheme,
+};
 use std::sync::Arc;
 use tokio::sync::{
   mpsc::{Receiver, Sender},
   Notify,
 };
-use tokio_native_tls::native_tls::TlsConnector as NativeTlsConnector;
-use tokio_native_tls::TlsConnector;
+use tokio_tungstenite::{
+  connect_async,
+  connect_async_tls_with_config,
+  tungstenite::protocol::Message,
+  Connector,
+};
 use tracing::Instrument;
+use url::Url;
 
-/// Websocket connector for ButtplugClients, using [async_tungstenite]
+pub fn get_rustls_config_dangerous() -> ClientConfig {
+  let store = rustls::RootCertStore::empty();
+
+  // As of rustls v0.22, safe defaults are provided by default in the ClientConfig builder.
+  let mut config = ClientConfig::builder()
+    .with_root_certificates(store)
+    .with_no_client_auth();
+  config
+    .dangerous()
+    .set_certificate_verifier(Arc::new(NoCertificateVerification {}));
+
+  config
+}
+#[derive(Debug)]
+pub struct NoCertificateVerification {}
+impl ServerCertVerifier for NoCertificateVerification {
+  fn verify_server_cert(
+    &self,
+    _end_entity: &rustls::pki_types::CertificateDer,
+    _intermediates: &[rustls::pki_types::CertificateDer],
+    _server_name: &rustls::pki_types::ServerName,
+    _ocsp: &[u8],
+    _now: rustls::pki_types::UnixTime,
+  ) -> Result<ServerCertVerified, rustls::Error> {
+    Ok(ServerCertVerified::assertion())
+  }
+
+  fn verify_tls12_signature(
+    &self,
+    _message: &[u8],
+    _cert: &rustls::pki_types::CertificateDer<'_>,
+    _dss: &rustls::DigitallySignedStruct,
+  ) -> Result<HandshakeSignatureValid, rustls::Error> {
+    Ok(HandshakeSignatureValid::assertion())
+  }
+
+  fn verify_tls13_signature(
+    &self,
+    _message: &[u8],
+    _cert: &rustls::pki_types::CertificateDer<'_>,
+    _dss: &rustls::DigitallySignedStruct,
+  ) -> Result<HandshakeSignatureValid, rustls::Error> {
+    Ok(HandshakeSignatureValid::assertion())
+  }
+
+  fn supported_verify_schemes(&self) -> Vec<SignatureScheme> {
+    vec![
+      SignatureScheme::ECDSA_NISTP256_SHA256,
+      SignatureScheme::ECDSA_NISTP384_SHA384,
+      SignatureScheme::ECDSA_NISTP521_SHA512,
+      SignatureScheme::ECDSA_SHA1_Legacy,
+      SignatureScheme::ED25519,
+      SignatureScheme::ED448,
+      SignatureScheme::RSA_PKCS1_SHA1,
+      SignatureScheme::RSA_PKCS1_SHA1,
+      SignatureScheme::RSA_PKCS1_SHA256,
+      SignatureScheme::RSA_PKCS1_SHA384,
+      SignatureScheme::RSA_PKCS1_SHA512,
+      SignatureScheme::RSA_PSS_SHA256,
+      SignatureScheme::RSA_PSS_SHA384,
+      SignatureScheme::RSA_PSS_SHA512,
+    ]
+  }
+}
+
+/// Websocket connector for ButtplugClients, using [tokio_tungstenite]
 pub struct ButtplugWebsocketClientTransport {
   /// Address of the server we'll connect to.
   address: String,
@@ -85,34 +159,26 @@ impl ButtplugConnectorTransport for ButtplugWebsocketClientTransport {
   ) -> BoxFuture<'static, Result<(), ButtplugConnectorError>> {
     let disconnect_notifier = self.disconnect_notifier.clone();
 
-    // If we're supposed to be a secure connection, generate a TLS connector
-    // based on our certificate verfication needs. Otherwise, just pass None in
-    // which case we won't wrap.
-    let tls_connector: Option<TlsConnector> = if self.should_use_tls {
-      if self.bypass_cert_verify {
-        Some(
-          NativeTlsConnector::builder()
-            .danger_accept_invalid_certs(true)
-            .build()
-            .expect("Should always succeed, we're not setting any fallible options.")
-            .into(),
-        )
-      } else {
-        Some(
-          NativeTlsConnector::new()
-            .expect("Should always succeed, not setting options.")
-            .into(),
-        )
-      }
-    } else {
-      // If we're not using a secure connection, just return None, at which
-      // point async_tungstenite won't use a wrapper.
-      None
-    };
     let address = self.address.clone();
-
+    let should_use_tls = self.should_use_tls;
+    let bypass_cert_verify = self.bypass_cert_verify;
     async move {
-      match connect_async_with_tls_connector(&address, tls_connector).await {
+      let url = Url::parse(&address).expect("Should be checked before here");
+      let stream_result = if should_use_tls {
+        // If we're supposed to be a secure connection, generate a TLS connector
+        // based on our certificate verfication needs. Otherwise, just pass None in
+        // which case we won't wrap.
+        let connector = if bypass_cert_verify {
+          Some(Connector::Rustls(Arc::new(get_rustls_config_dangerous())))
+        } else {
+          None
+        };
+        connect_async_tls_with_config(&url, None, false, connector).await
+      } else {
+        connect_async(&url).await
+      };
+
+      match stream_result {
         Ok((stream, _)) => {
           let (mut writer, mut reader) = stream.split();
 

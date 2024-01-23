@@ -29,7 +29,9 @@ pub mod hgod;
 pub mod hismith;
 pub mod hismith_mini;
 pub mod htk_bm;
+pub mod itoys;
 pub mod jejoue;
+pub mod joyhub;
 pub mod kgoal_boost;
 pub mod kiiroo_v2;
 pub mod kiiroo_v21;
@@ -39,6 +41,7 @@ pub mod kizuna;
 pub mod lelo_harmony;
 pub mod lelof1s;
 pub mod lelof1sv2;
+pub mod leten;
 pub mod libo_elle;
 pub mod libo_shark;
 pub mod libo_vibes;
@@ -56,8 +59,13 @@ pub mod mannuo;
 pub mod maxpro;
 pub mod meese;
 pub mod metaxsire;
+pub mod metaxsire_repeat;
+pub mod metaxsire_v2;
+pub mod metaxsire_v3;
 pub mod mizzzee;
 pub mod mizzzee_v2;
+pub mod mizzzee_v3;
+pub mod monsterpub;
 pub mod motorbunny;
 pub mod mysteryvibe;
 pub mod mysteryvibe_v2;
@@ -75,10 +83,13 @@ pub mod sensee;
 pub mod svakom;
 pub mod svakom_alex;
 pub mod svakom_alex_v2;
+pub mod svakom_avaneo;
 pub mod svakom_barnard;
+pub mod svakom_dt250a;
 pub mod svakom_iker;
 pub mod svakom_pulse;
 pub mod svakom_sam;
+pub mod svakom_suitcase;
 pub mod svakom_tarax;
 pub mod svakom_v2;
 pub mod svakom_v3;
@@ -87,6 +98,7 @@ pub mod synchro;
 pub mod tcode_v03;
 pub mod thehandy;
 pub mod tryfun;
+pub mod vibcrafter;
 pub mod vibratissimo;
 pub mod vorze_sa;
 pub mod wetoy;
@@ -234,7 +246,9 @@ pub fn get_default_protocol_map() -> HashMap<String, Arc<dyn ProtocolIdentifierF
     galaku_pump::setup::GalakuPumpIdentifierFactory::default(),
   );
 
+  add_to_protocol_map(&mut map, itoys::setup::IToysIdentifierFactory::default());
   add_to_protocol_map(&mut map, jejoue::setup::JeJoueIdentifierFactory::default());
+  add_to_protocol_map(&mut map, joyhub::setup::JoyHubIdentifierFactory::default());
   add_to_protocol_map(
     &mut map,
     kiiroo_v2::setup::KiirooV2IdentifierFactory::default(),
@@ -260,6 +274,7 @@ pub fn get_default_protocol_map() -> HashMap<String, Arc<dyn ProtocolIdentifierF
     &mut map,
     lelof1sv2::setup::LeloF1sV2IdentifierFactory::default(),
   );
+  add_to_protocol_map(&mut map, leten::setup::LetenIdentifierFactory::default());
   add_to_protocol_map(
     &mut map,
     lelo_harmony::setup::LeloHarmonyIdentifierFactory::default(),
@@ -322,11 +337,31 @@ pub fn get_default_protocol_map() -> HashMap<String, Arc<dyn ProtocolIdentifierF
   );
   add_to_protocol_map(
     &mut map,
+    metaxsire_repeat::setup::MetaXSireRepeatIdentifierFactory::default(),
+  );
+  add_to_protocol_map(
+    &mut map,
+    metaxsire_v2::setup::MetaXSireV2IdentifierFactory::default(),
+  );
+  add_to_protocol_map(
+    &mut map,
+    metaxsire_v3::setup::MetaXSireV3IdentifierFactory::default(),
+  );
+  add_to_protocol_map(
+    &mut map,
     mizzzee::setup::MizzZeeIdentifierFactory::default(),
   );
   add_to_protocol_map(
     &mut map,
     mizzzee_v2::setup::MizzZeeV2IdentifierFactory::default(),
+  );
+  add_to_protocol_map(
+    &mut map,
+    mizzzee_v3::setup::MizzZeeV3IdentifierFactory::default(),
+  );
+  add_to_protocol_map(
+    &mut map,
+    monsterpub::setup::MonsterPubIdentifierFactory::default(),
   );
   add_to_protocol_map(
     &mut map,
@@ -375,6 +410,10 @@ pub fn get_default_protocol_map() -> HashMap<String, Arc<dyn ProtocolIdentifierF
   add_to_protocol_map(&mut map, svakom::setup::SvakomIdentifierFactory::default());
   add_to_protocol_map(
     &mut map,
+    svakom_avaneo::setup::SvakomAvaNeoIdentifierFactory::default(),
+  );
+  add_to_protocol_map(
+    &mut map,
     svakom_alex::setup::SvakomAlexIdentifierFactory::default(),
   );
   add_to_protocol_map(
@@ -387,6 +426,10 @@ pub fn get_default_protocol_map() -> HashMap<String, Arc<dyn ProtocolIdentifierF
   );
   add_to_protocol_map(
     &mut map,
+    svakom_dt250a::setup::SvakomDT250AIdentifierFactory::default(),
+  );
+  add_to_protocol_map(
+    &mut map,
     svakom_iker::setup::SvakomIkerIdentifierFactory::default(),
   );
   add_to_protocol_map(
@@ -396,6 +439,10 @@ pub fn get_default_protocol_map() -> HashMap<String, Arc<dyn ProtocolIdentifierF
   add_to_protocol_map(
     &mut map,
     svakom_sam::setup::SvakomSamIdentifierFactory::default(),
+  );
+  add_to_protocol_map(
+    &mut map,
+    svakom_suitcase::setup::SvakomSuitcaseIdentifierFactory::default(),
   );
   add_to_protocol_map(
     &mut map,
@@ -421,6 +468,10 @@ pub fn get_default_protocol_map() -> HashMap<String, Arc<dyn ProtocolIdentifierF
   add_to_protocol_map(
     &mut map,
     tcode_v03::setup::TCodeV03IdentifierFactory::default(),
+  );
+  add_to_protocol_map(
+    &mut map,
+    vibcrafter::setup::VibCrafterIdentifierFactory::default(),
   );
   add_to_protocol_map(
     &mut map,

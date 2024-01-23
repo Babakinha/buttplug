@@ -44,6 +44,7 @@ async fn load_test_case(test_file: &str) -> DeviceTestCase {
 #[test_case("test_meese_protocol.yaml" ; "Meese Protocol")]
 #[test_case("test_mizzzee_protocol.yaml" ; "Mizz Zee Protocol")]
 #[test_case("test_mizzzee_v2_protocol.yaml" ; "Mizz Zee v2 Protocol")]
+#[test_case("test_mizzzee_v3_protocol.yaml" ; "Mizz Zee v3 Protocol")]
 #[test_case("test_vorze_ufo.yaml" ; "Vorze Protocol - UFO")]
 #[test_case("test_vorze_ufo_tw.yaml" ; "Vorze Protocol - UFO TW")]
 #[test_case("test_vorze_cyclone.yaml" ; "Vorze Protocol - Cyclone")]
@@ -72,6 +73,9 @@ async fn load_test_case(test_file: &str) -> DeviceTestCase {
 #[test_case("test_hgod_protocol.yaml" ; "Hgod Protocol")]
 #[test_case("test_tryfun_protocol.yaml" ; "TryFun Protocol")]
 #[test_case("test_metaxsire_rex.yaml" ; "metaXsire Protocol - Rex")]
+#[test_case("test_metaxsire_olis.yaml" ; "metaXsire Protocol - Olis")]
+#[test_case("test_metaxsire_cali.yaml" ; "metaXsire Protocol - Cali")]
+#[test_case("test_metaxsire_nolan.yaml" ; "metaXsire Protocol v2 - Nolan")]
 #[test_case("test_cowgirl_protocol.yaml" ; "The Cowgirl Protocol")]
 #[test_case("test_galaku_nebula.yaml" ; "Galaku Pump Protocol - Nebula")]
 #[test_case("test_xibao_protocol.yaml" ; "Xibao Protocol")]
@@ -90,6 +94,9 @@ async fn load_test_case(test_file: &str) -> DeviceTestCase {
 #[test_case("test_longlosttouch_protocol.yaml" ; "LongLostTouch Protocol")]
 #[test_case("test_adrienlastic_protocol.yaml" ; "Adrien Lastic Protocol")]
 #[test_case("test_foreo_protocol.yaml" ; "Foreo Protocol")]
+#[test_case("test_joyhub_protocol.yaml" ; "JoyHub Protocol")]
+#[test_case("test_itoys_protocol.yaml" ; "iToys Protocol")]
+#[test_case("test_leten_protocol.yaml" ; "Leten Protocol")]
 #[tokio::test]
 async fn test_device_protocols_embedded_v3(test_file: &str) {
   //tracing_subscriber::fmt::init();
@@ -124,6 +131,7 @@ async fn test_device_protocols_embedded_v3(test_file: &str) {
 #[test_case("test_meese_protocol.yaml" ; "Meese Protocol")]
 #[test_case("test_mizzzee_protocol.yaml" ; "Mizz Zee Protocol")]
 #[test_case("test_mizzzee_v2_protocol.yaml" ; "Mizz Zee v2 Protocol")]
+#[test_case("test_mizzzee_v3_protocol.yaml" ; "Mizz Zee v3 Protocol")]
 #[test_case("test_vorze_ufo.yaml" ; "Vorze Protocol - UFO")]
 #[test_case("test_vorze_ufo_tw.yaml" ; "Vorze Protocol - UFO TW")]
 #[test_case("test_vorze_cyclone.yaml" ; "Vorze Protocol - Cyclone")]
@@ -152,6 +160,9 @@ async fn test_device_protocols_embedded_v3(test_file: &str) {
 #[test_case("test_hgod_protocol.yaml" ; "Hgod Protocol")]
 #[test_case("test_tryfun_protocol.yaml" ; "TryFun Protocol")]
 #[test_case("test_metaxsire_rex.yaml" ; "metaXsire Protocol - Rex")]
+#[test_case("test_metaxsire_olis.yaml" ; "metaXsire Protocol - Olis")]
+#[test_case("test_metaxsire_cali.yaml" ; "metaXsire Protocol - Cali")]
+#[test_case("test_metaxsire_nolan.yaml" ; "metaXsire Protocol v2 - Nolan")]
 #[test_case("test_cowgirl_protocol.yaml" ; "The Cowgirl Protocol")]
 #[test_case("test_galaku_nebula.yaml" ; "Galaku Pump Protocol - Nebula")]
 #[test_case("test_xibao_protocol.yaml" ; "Xibao Protocol")]
@@ -169,6 +180,9 @@ async fn test_device_protocols_embedded_v3(test_file: &str) {
 #[test_case("test_xiuxiuda_protocol.yaml" ; "Xiuxiuda Protocol")]
 #[test_case("test_adrienlastic_protocol.yaml" ; "Adrien Lastic Protocol")]
 #[test_case("test_foreo_protocol.yaml" ; "Foreo Protocol")]
+#[test_case("test_joyhub_protocol.yaml" ; "JoyHub Protocol")]
+#[test_case("test_itoys_protocol.yaml" ; "iToys Protocol")]
+#[test_case("test_leten_protocol.yaml" ; "Leten Protocol")]
 #[tokio::test]
 async fn test_device_protocols_json_v3(test_file: &str) {
   //tracing_subscriber::fmt::init();
@@ -194,6 +208,7 @@ async fn test_device_protocols_json_v3(test_file: &str) {
 #[test_case("test_meese_protocol.yaml" ; "Meese Protocol")]
 #[test_case("test_mizzzee_protocol.yaml" ; "Mizz Zee Protocol")]
 #[test_case("test_mizzzee_v2_protocol.yaml" ; "Mizz Zee v2 Protocol")]
+#[test_case("test_mizzzee_v3_protocol.yaml" ; "Mizz Zee v3 Protocol")]
 #[test_case("test_vorze_ufo.yaml" ; "Vorze Protocol - UFO")]
 #[test_case("test_vorze_ufo_tw.yaml" ; "Vorze Protocol - UFO TW")]
 #[test_case("test_vorze_cyclone.yaml" ; "Vorze Protocol - Cyclone")]
@@ -231,6 +246,8 @@ async fn test_device_protocols_json_v3(test_file: &str) {
 #[test_case("test_xiuxiuda_protocol.yaml" ; "Xiuxiuda Protocol")]
 #[test_case("test_adrienlastic_protocol.yaml" ; "Adrien Lastic Protocol")]
 #[test_case("test_foreo_protocol.yaml" ; "Foreo Protocol")]
+#[test_case("test_itoys_protocol.yaml" ; "iToys Protocol")]
+#[test_case("test_leten_protocol.yaml" ; "Leten Protocol")]
 #[tokio::test]
 async fn test_device_protocols_embedded_v2(test_file: &str) {
   util::device_test::client::client_v2::run_embedded_test_case(&load_test_case(test_file).await)
@@ -255,6 +272,7 @@ async fn test_device_protocols_embedded_v2(test_file: &str) {
 #[test_case("test_meese_protocol.yaml" ; "Meese Protocol")]
 #[test_case("test_mizzzee_protocol.yaml" ; "Mizz Zee Protocol")]
 #[test_case("test_mizzzee_v2_protocol.yaml" ; "Mizz Zee v2 Protocol")]
+#[test_case("test_mizzzee_v3_protocol.yaml" ; "Mizz Zee v3 Protocol")]
 #[test_case("test_vorze_ufo.yaml" ; "Vorze Protocol - UFO")]
 #[test_case("test_vorze_ufo_tw.yaml" ; "Vorze Protocol - UFO TW")]
 #[test_case("test_vorze_cyclone.yaml" ; "Vorze Protocol - Cyclone")]
@@ -292,6 +310,8 @@ async fn test_device_protocols_embedded_v2(test_file: &str) {
 #[test_case("test_xiuxiuda_protocol.yaml" ; "Xiuxiuda Protocol")]
 #[test_case("test_adrienlastic_protocol.yaml" ; "Adrien Lastic Protocol")]
 #[test_case("test_foreo_protocol.yaml" ; "Foreo Protocol")]
+#[test_case("test_itoys_protocol.yaml" ; "iToys Protocol")]
+#[test_case("test_leten_protocol.yaml" ; "Leten Protocol")]
 #[tokio::test]
 async fn test_device_protocols_json_v2(test_file: &str) {
   util::device_test::client::client_v2::run_json_test_case(&load_test_case(test_file).await).await;

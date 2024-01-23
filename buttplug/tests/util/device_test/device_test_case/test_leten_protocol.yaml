@@ -1,7 +1,20 @@
 devices:
   - identifier: 
-      name: "FOFO"
-    expected_name: "Foreo LUNA fofo"
+      name: "F520A-LT"
+    expected_name: "Leten Device"
+device_init:
+  # Initialization
+  - !Commands
+    device_index: 0
+    commands:
+      - !Write
+        endpoint: tx
+        data: [4,1]
+        write_with_response: true
+      - !Write
+        endpoint: tx
+        data: [2,0]
+        write_with_response: true
 device_commands:
   - !Messages
       device_index: 0
@@ -14,7 +27,7 @@ device_commands:
       commands:
         - !Write
             endpoint: tx
-            data: [0x01, 0x01, 0x05]
+            data: [0x02, 0x0d]
             write_with_response: true
   - !Messages
       device_index: 0
@@ -27,16 +40,16 @@ device_commands:
       commands:
         - !Write
             endpoint: tx
-            data: [0x01, 0x01, 0x08]
+            data: [0x02, 0x13]
             write_with_response: true
   - !Messages
       device_index: 0
-      messages:
-        - !Stop
+      messages: 
+        - !Stop 
   - !Commands
       device_index: 0
-      commands:
+      commands: 
         - !Write
             endpoint: tx
-            data: [0x01, 0x01, 0x00]
+            data: [0x02, 0x00]
             write_with_response: true
